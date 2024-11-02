@@ -7,6 +7,7 @@ set -e
 set -u
 set -o pipefail
 
+
 # ------------------------------------------------------------------------------
 # GLOBAL Defaults
 # ------------------------------------------------------------------------------
@@ -16,27 +17,17 @@ PROJECT=""
 DRY_RUN=false
 TEMPLATE_ONLY=false
 
-# Colors/Views
-Reset=$({ tput sgr0 || tput me;} 2> /dev/null)
-
-[ -t 1 ] && [ -n "$TERM" ] && [ "$TERM" != *-m ] && [ "$TERM" != "dumb" ] && {
-    Bold=$({ tput bold || tput md;} 2> /dev/null)
-    Black=$({ tput setaf 0 || tput AF 0;} 2> /dev/null)
-    White=$({ tput setaf 7 || tput AF 7;} 2> /dev/null)
-    Red=$({ tput setaf 1 || tput AF 1;} 2> /dev/null)
-    Green=$({ tput setaf 2 || tput AF 2;} 2> /dev/null)
-    Yellow=$({ tput setaf 3 || tput AF 3;} 2> /dev/null)
-    Blue=$({ tput setaf 4 || tput AF 4;} 2> /dev/null)
-    Purple=$({ tput setaf 5 || tput AF 5;} 2> /dev/null)
-    Cyan=$({ tput setaf 6 || tput AF 6;} 2> /dev/null)
-}
 
 # ------------------------------------------------------------------------------
 # Functions
 # ------------------------------------------------------------------------------
 
+# Source the finest helper functions
+[[ -f "_helper.sh" ]] && source "_helper.sh"
+
+# How do they work?
 usage(){
-    >&2 echo -e "Usage:\n\n    ${Bold}${Green}$(basename $0)${Reset} -p --project [PROJECT_NAME] -u --user [GITHUB_USER_NAME] [-d --dry-run] [-t --template-only]\n"
+    >&2 echo -e "Usage:\n\n    ${Bold}${Green}$(basename "$0")${Reset} -p --project [PROJECT_NAME] -u --user [GITHUB_USER_NAME] [-d --dry-run] [-t --template-only]\n"
     >&2 echo "Options:"
     >&2 echo "  -p, --project        Project name"
     >&2 echo "  -u, --user          GitHub username"
@@ -44,6 +35,7 @@ usage(){
     >&2 echo "  -t, --template-only Create local structure without GitHub setup"
     exit 1
 }
+
 
 # Execute or simulate command based on DRY_RUN
 execute() {
@@ -54,9 +46,8 @@ execute() {
     fi
 }
 
-# Your existing helper functions here...
-[[ -f "_helper.sh" ]] && source "_helper.sh"
 
+# Make a dang Makefile
 create_makefile() {
     local makefile_content="
 .PHONY: build test lint run clean
@@ -80,6 +71,8 @@ clean:
     execute "echo \"${makefile_content}\" > Makefile"
 }
 
+
+# Create initial mail.go file
 create_main_go() {
     local main_content='
 package main
@@ -98,6 +91,8 @@ func main() {
     execute "echo \"${main_content}\" > cmd/${PROJECT}/main.go"
 }
 
+
+# Create a basic golang project .gitignore
 create_gitignore() {
     local gitignore_content="
 # Binaries and build
@@ -121,6 +116,8 @@ vendor/
     execute "echo \"${gitignore_content}\" > .gitignore"
 }
 
+
+# Make some common directories
 setup_project_structure() {
     local dirs=(
         "cmd/${PROJECT}"
@@ -145,6 +142,8 @@ setup_project_structure() {
     create_gitignore
 }
 
+
+# Make github join in the party.. you count too.
 setup_github_repo() {
     if [ "$TEMPLATE_ONLY" = false ]; then
         # Check if gh CLI is installed
@@ -157,11 +156,15 @@ setup_github_repo() {
     fi
 }
 
+
+# Initialized the project module
 initialize_go_module() {
     execute "go mod init github.com/${GH_USER}/${PROJECT}"
     execute "go mod tidy"
 }
 
+
+# Install common development tooling
 install_dev_tools() {
     local tools=(
         "github.com/golangci/golangci-lint/cmd/golangci-lint@latest"
@@ -174,10 +177,8 @@ install_dev_tools() {
     done
 }
 
-# ------------------------------------------------------------------------------
-# Parse Arguments
-# ------------------------------------------------------------------------------
 
+# I can't hear you over all this drum and bass
 parse_arguments(){
     while [[ $# > 0 ]]; do
         case "${1}" in
@@ -214,6 +215,8 @@ parse_arguments(){
         usage
     fi
 }
+
+
 
 # ------------------------------------------------------------------------------
 # Main

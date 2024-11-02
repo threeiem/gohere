@@ -12,19 +12,20 @@ Blue=""
 Purple=""
 Cyan=""
 
-# Only set colors if we're in a terminal
-if [ -t 1 ] && [ -n "${TERM:-}" ] && [ "${TERM:-}" != "*-m" ] && [ "${TERM:-}" != "dumb" ]; then
-    Reset=$({ tput sgr0 || tput me; } 2>/dev/null || echo '')
-    Bold=$({ tput bold || tput md; } 2>/dev/null || echo '')
-    Black=$({ tput setaf 0 || tput AF 0; } 2>/dev/null || echo '')
-    White=$({ tput setaf 7 || tput AF 7; } 2>/dev/null || echo '')
-    Red=$({ tput setaf 1 || tput AF 1; } 2>/dev/null || echo '')
-    Green=$({ tput setaf 2 || tput AF 2; } 2>/dev/null || echo '')
-    Yellow=$({ tput setaf 3 || tput AF 3; } 2>/dev/null || echo '')
-    Blue=$({ tput setaf 4 || tput AF 4; } 2>/dev/null || echo '')
-    Purple=$({ tput setaf 5 || tput AF 5; } 2>/dev/null || echo '')
-    Cyan=$({ tput setaf 6 || tput AF 6; } 2>/dev/null || echo '')
-fi
+# Colors/Views
+Reset=$({ tput sgr0 || tput me;} 2> /dev/null)
+
+[[ -t 1 ]] && [[ -n "$TERM" ]] && [[ ! "$TERM" =~ .*-m ]] && [[ "$TERM" != "dumb" ]] && {
+    Bold=$({ tput bold || tput md;} 2> /dev/null)
+    Black=$({ tput setaf 0 || tput AF 0;} 2> /dev/null)
+    White=$({ tput setaf 7 || tput AF 7;} 2> /dev/null)
+    Red=$({ tput setaf 1 || tput AF 1;} 2> /dev/null)
+    Green=$({ tput setaf 2 || tput AF 2;} 2> /dev/null)
+    Yellow=$({ tput setaf 3 || tput AF 3;} 2> /dev/null)
+    Blue=$({ tput setaf 4 || tput AF 4;} 2> /dev/null)
+    Purple=$({ tput setaf 5 || tput AF 5;} 2> /dev/null)
+    Cyan=$({ tput setaf 6 || tput AF 6;} 2> /dev/null)
+}
 
 # message [title] [body] - Print a message title and body
 message(){
