@@ -14,16 +14,18 @@ set -o pipefail
 
 GH_USER=""
 PROJECT=""
-DRY_RUN=false
-TEMPLATE_ONLY=false
+DRY_RUN="false"
+TEMPLATE_ONLY="false"
 
+# Get the directory of the current script
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # ------------------------------------------------------------------------------
 # Functions
 # ------------------------------------------------------------------------------
 
 # Source the finest helper functions
-[[ -f "_helper.sh" ]] && source "_helper.sh"
+[[ -f "${SCRIPT_PATH}/_helper.sh" ]] && source "${SCRIPT_PATH}/_helper.sh"
 
 # How do they work?
 usage(){
@@ -67,7 +69,8 @@ run:
 clean:
 	rm -f ${PROJECT}
 	go clean -cache
-"
+" > Makefile
+    execute "touch Makefile"
     execute "echo \"${makefile_content}\" > Makefile"
 }
 
@@ -168,7 +171,7 @@ initialize_go_module() {
 install_dev_tools() {
     local tools=(
         "github.com/golangci/golangci-lint/cmd/golangci-lint@latest"
-        "github.com/cosmtrek/air@latest"
+        "github.com/air-verse/air@latest"
         "github.com/swaggo/swag/cmd/swag@latest"
     )
 
@@ -213,6 +216,10 @@ parse_arguments(){
     if [[ -z "${PROJECT}" ]]; then
         error "Project name is required."
         usage
+    fi
+
+    if [[ "${TEMPLATE_ONLY}" == "false" ]]; then
+      init_keys
     fi
 }
 

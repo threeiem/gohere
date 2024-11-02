@@ -27,6 +27,11 @@ Reset=$({ tput sgr0 || tput me;} 2> /dev/null)
     Cyan=$({ tput setaf 6 || tput AF 6;} 2> /dev/null)
 }
 
+# Initialize login to github. (2fa stuff)
+init_keys(){
+    ssh -T git@github.com 2>&1 | awk -F, '{print $1}' || true
+}
+
 # message [title] [body] - Print a message title and body
 message(){
     local title="${1:-INFO}"
