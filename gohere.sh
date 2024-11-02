@@ -55,7 +55,7 @@ execute() {
 }
 
 # Your existing helper functions here...
-[[ -f "helper_functions.sh" ]] && source "helper_functions.sh"
+[[ -f "_helper.sh" ]] && source "_helper.sh"
 
 create_makefile() {
     local makefile_content="
@@ -247,4 +247,7 @@ main() {
     info "Project setup complete! 🎉"
 }
 
-main "$@"
+# Protect against running main when we run bats
+if [[ "${TESTING:-false}" != "true" ]]; then
+    main "$@"
+fi
